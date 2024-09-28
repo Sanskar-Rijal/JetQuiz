@@ -5,7 +5,7 @@ import com.example.randomquiz.model.Questions
 import com.example.randomquiz.network.Question_Api
 import javax.inject.Inject
 
-//similar to taking data from Dao
+//similar to taking data from Dao ie. Question_Api
 
 class QuestionRepository @Inject constructor(
     private val api :Question_Api) {

@@ -79,6 +79,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
 
+    // using view model
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+
 
 
     //Hilt dependencies
