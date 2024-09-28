@@ -2,6 +2,7 @@ package com.example.randomquiz.di
 
 import com.example.randomquiz.model.Questions
 import com.example.randomquiz.network.Question_Api
+import com.example.randomquiz.repository.QuestionRepository
 import com.example.randomquiz.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -16,6 +17,9 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class) //it means we want this to be created only once
 object AppModule {
 
+    @Singleton
+    @Provides
+    fun provideQuestionRepository(api:Question_Api) =QuestionRepository(api)
     @Singleton //we don't want repetation or instances of this class
     @Provides //it will provide something so @Provides
     fun provideQuestionApi():Question_Api{
