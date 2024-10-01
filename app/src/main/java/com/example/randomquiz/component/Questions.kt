@@ -60,7 +60,7 @@ fun Questions(viewmodel: QuestionsViewModel){
 }
 
 
-@Preview
+
 @Composable
 fun QuestionDisplay(
     question:Questions,
