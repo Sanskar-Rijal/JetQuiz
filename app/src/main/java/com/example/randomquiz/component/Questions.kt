@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,6 +76,11 @@ fun QuestionDisplay(
         question.choices.toMutableList() //when question objec twill change then  screen will remember the state
     }
 
+        //checking which answer is clicked
+    val answerstate = remember(question) {
+        mutableStateOf<Int?>(null)
+    }
+
 
     val pathEffect =androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(10f,10f),0f)
     Surface(modifier = Modifier
@@ -108,7 +115,12 @@ fun QuestionDisplay(
                         .background(Color.Transparent)
                         .border(width = 4.dp, brush = Brush.linearGradient(
                             colors = listOf(AppColors.mDarkPurple,
-                                AppColors.mDarkPurple)), shape = RoundedCornerShape(15.dp))){
+                                AppColors.mDarkPurple)), shape = RoundedCornerShape(15.dp)),
+                        verticalAlignment = Alignment.CenterVertically){
+                        RadioButton(selected =(answerstate.value == index), onClick = {
+                            //updateAnswer(index)
+                        })//selected means we have to look the state of answer
+                        //index is the right answer and answerstate.value is the answer that we have selecteed
 
                     }
                 }
