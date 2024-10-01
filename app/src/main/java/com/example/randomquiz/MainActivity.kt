@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.randomquiz.component.QuestionDisplay
+import com.example.randomquiz.component.Questions
 import com.example.randomquiz.screens.QuestionsViewModel
 import com.example.randomquiz.screens.TriviaHome
 import com.example.randomquiz.ui.theme.RandomQuizTheme
@@ -19,8 +22,10 @@ class MainActivity : ComponentActivity() {
         //enableEdgeToEdge()
         setContent {
             myapp {
-                TriviaHome()
-
+                //TriviaHome()
+//                val quizViewmodel:QuestionsViewModel by viewModels()
+//                Questions(quizViewmodel)
+                QuestionDisplay()
             }
         }
     }
