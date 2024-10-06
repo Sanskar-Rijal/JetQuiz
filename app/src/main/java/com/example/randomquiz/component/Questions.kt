@@ -129,13 +129,17 @@ fun QuestionDisplay(
                     Row(modifier = Modifier
                         .padding(4.dp)
                         .fillMaxWidth()
-                        .height(45.dp)
-                        .clip(RoundedCornerShape(topStart = CornerSize(50), topEnd = CornerSize(50),
-                            bottomEnd = CornerSize(50), bottomStart = CornerSize(50)))
+                        .height(55.dp)
+                        .clip(RoundedCornerShape(
+                            topStart = CornerSize(25),
+                            topEnd = CornerSize(25),
+                            bottomEnd = CornerSize(25),
+                            bottomStart = CornerSize(25)))
                         .background(Color.Transparent)
-                        .border(width = 4.dp, brush = Brush.linearGradient(
-                            colors = listOf(AppColors.mDarkPurple,
-                                AppColors.mDarkPurple)), shape = RoundedCornerShape(15.dp)),
+                        .border(width = 4.dp,
+                            brush = Brush.linearGradient(
+                            colors = listOf(AppColors.mOffDarkPurple,
+                                AppColors.mOffDarkPurple)), shape = RoundedCornerShape(15.dp)),
                         verticalAlignment = Alignment.CenterVertically){
 
                         //Determines if the current RadioButton is selected based on answerstate.
