@@ -2,6 +2,7 @@ package com.example.randomquiz.component
 
 import android.graphics.PathEffect
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -21,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,8 +34,10 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextIndent
@@ -47,6 +53,12 @@ import com.example.randomquiz.util.AppColors
 @Composable
 fun Questions(viewmodel: QuestionsViewModel){
 
+    val questionIndex = remember {
+        mutableStateOf(0)
+    }
+
+
+
     val questions = viewmodel.data.value.data?.toMutableList()
     if(viewmodel.data.value.loading==true){
         CircularProgressIndicator()
@@ -57,8 +69,16 @@ fun Questions(viewmodel: QuestionsViewModel){
 //            Log.d("result", "Questions: ${questionitem.question}")
 //
 //        }
+        val question = try {
+            questions?.get(questionIndex.value)
+        }
+        catch (ex:Exception){
+            null
+        }
         if(questions!=null){
-            QuestionDisplay(questions.first())
+            QuestionDisplay(question!!,questionIndex,viewmodel){
+                questionIndex.value += 1
+            }
         }
 
     }
@@ -70,8 +90,8 @@ fun Questions(viewmodel: QuestionsViewModel){
 @Composable
 fun QuestionDisplay(
     question:Questions,
-   // questionIndex:MutableState<Int>,
-    //viewmodel:QuestionsViewModel,
+    questionIndex:MutableState<Int>,
+    viewmodel:QuestionsViewModel,
     onNextClicked:(Int)->Unit ={ }
 ){
     //Stores the list of answer choices for the current question.
@@ -101,16 +121,18 @@ fun QuestionDisplay(
         }
     }
 
+    //getting context to use toast
+    val context = LocalContext.current
 
     val pathEffect =androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(10f,10f),0f)
     Surface(modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight(),
         color=AppColors.mDarkPurple) {
-        Column(modifier = Modifier.padding(12.dp),
+        Column(modifier = Modifier,
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start){
-            QuestionTracker()
+            QuestionTracker(counter = questionIndex.value )
             DrawComposable(pathEffect)
             Column(){
                 Text(text =question.question,
@@ -130,16 +152,24 @@ fun QuestionDisplay(
                         .padding(4.dp)
                         .fillMaxWidth()
                         .height(55.dp)
-                        .clip(RoundedCornerShape(
-                            topStart = CornerSize(25),
-                            topEnd = CornerSize(25),
-                            bottomEnd = CornerSize(25),
-                            bottomStart = CornerSize(25)))
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = CornerSize(25),
+                                topEnd = CornerSize(25),
+                                bottomEnd = CornerSize(25),
+                                bottomStart = CornerSize(25)
+                            )
+                        )
                         .background(Color.Transparent)
-                        .border(width = 4.dp,
+                        .border(
+                            width = 4.dp,
                             brush = Brush.linearGradient(
-                            colors = listOf(AppColors.mOffDarkPurple,
-                                AppColors.mOffDarkPurple)), shape = RoundedCornerShape(15.dp)),
+                                colors = listOf(
+                                    AppColors.mOffDarkPurple,
+                                    AppColors.mOffDarkPurple
+                                )
+                            ), shape = RoundedCornerShape(15.dp)
+                        ),
                         verticalAlignment = Alignment.CenterVertically){
 
                         //Determines if the current RadioButton is selected based on answerstate.
@@ -166,8 +196,40 @@ fun QuestionDisplay(
                                     else{
                                         Color.Red.copy(alpha = 0.3f)
                                     })) //end of radio button
-                        Text(text = answerText)
+
+
+                        val annotedString= buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Light,
+                                color = if(correctAnswerState.value==true &&
+                                    index==answerstate.value){
+                                    Color.Green
+                                }else if(correctAnswerState.value==false&&
+                                    index==answerstate.value){
+                                    Color.Red
+                                }else{
+                                    Color.White
+                                }, fontSize = 17.sp)){
+                                append(answerText)
+                            }
+                        }
+                        Text(text = annotedString, modifier = Modifier.padding(6.dp))
                     }
+                }
+
+                Button(onClick = {
+                    if(correctAnswerState.value!=null)
+                    onNextClicked(questionIndex.value)
+                    else
+                        Toast.makeText(context, "Select atleast one option", Toast.LENGTH_SHORT).show()
+                },
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .align(alignment = Alignment.CenterHorizontally),
+                    shape = RoundedCornerShape(34.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.mLightBlue)){
+                    Text(text = "NEXT", modifier = Modifier.padding(5.dp),
+                        color = AppColors.mOffWhite,
+                        fontSize = 17.sp)
                 }
             }
 
@@ -202,7 +264,6 @@ fun QuestionTracker(counter:Int=10,outofInt:Int=100){
         withStyle(style = SpanStyle(color = AppColors.mLightGray,
             fontWeight = FontWeight.Bold,
             fontSize = 27.sp)){
-            
             append("Question $counter/")
             withStyle(style = SpanStyle(color = AppColors.mLightGray,
                 fontWeight = FontWeight.Light,
