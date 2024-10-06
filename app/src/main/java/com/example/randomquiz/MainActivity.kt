@@ -23,9 +23,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             myapp {
                 //TriviaHome()
-//                val quizViewmodel:QuestionsViewModel by viewModels()
+                val quizViewmodel:QuestionsViewModel by viewModels()
 //                Questions(quizViewmodel)
-                QuestionDisplay()
+                    Questions(quizViewmodel)
             }
         }
     }

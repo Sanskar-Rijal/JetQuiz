@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,16 +50,14 @@ fun Questions(viewmodel: QuestionsViewModel){
     val questions = viewmodel.data.value.data?.toMutableList()
     if(viewmodel.data.value.loading==true){
         CircularProgressIndicator()
-        Log.d("Loading", "Questions: Loading...")
+
     }
     else{
-        questions?.forEach{questionitem->
-            Log.d("result", "Questions: ${questionitem.questions}")
-
+        if (questions != null){
+            QuestionDisplay(question=questions.first())
         }
     }
 
-     Log.d("Size", "Questions: ${questions?.size}")
 }
 
 
@@ -66,19 +65,35 @@ fun Questions(viewmodel: QuestionsViewModel){
 @Composable
 fun QuestionDisplay(
     question:Questions,
-    questionIndex:MutableState<Int>,
-    viewmodel:QuestionsViewModel,
-    onNextClicked:(Int)->Unit
+   // questionIndex:MutableState<Int>,
+    //viewmodel:QuestionsViewModel,
+    onNextClicked:(Int)->Unit ={ }
 ){
-
-    //makking states for buttons
+    //Stores the list of answer choices for the current question.
+    /**
+     * question is used as a key in remember, so when the question object changes,
+     */
     val choices = remember(question) {
-        question.choices.toMutableList() //when question objec twill change then  screen will remember the state
+        question.choices.toMutableList() //when question object will change then  screen will remember the state
     }
 
-        //checking which answer is clicked
+        //Tracks the index of the currently selected answer.
     val answerstate = remember(question) {
         mutableStateOf<Int?>(null)
+    }
+
+    // Indicates whether the selected answer is correct.
+    val correctAnswerState = remember(question) {
+        mutableStateOf<Boolean?>(null)
+    }
+
+    //  Handles the logic when a user selects an answer.
+    val updateAnswer : (Int) -> Unit = remember(question) {
+        {it
+            //it  is integer that is controlling index for correct choices
+            answerstate.value= it
+            correctAnswerState.value = choices[it] == question.answer
+        }
     }
 
 
@@ -93,7 +108,7 @@ fun QuestionDisplay(
             QuestionTracker()
             DrawComposable(pathEffect)
             Column(){
-                Text(text = "What is the Meaning of This",
+                Text(text = question.questions,
                     modifier = Modifier
                         .padding(7.dp)
                         .align(alignment = Alignment.Start)
@@ -104,7 +119,7 @@ fun QuestionDisplay(
                     color = AppColors.mOffWhite)
 
 
-            //choices
+            //choices foreachIndexed is a for loop which will run for each index
                 choices.forEachIndexed{index,answerText->
                     Row(modifier = Modifier
                         .padding(4.dp)
@@ -117,11 +132,32 @@ fun QuestionDisplay(
                             colors = listOf(AppColors.mDarkPurple,
                                 AppColors.mDarkPurple)), shape = RoundedCornerShape(15.dp)),
                         verticalAlignment = Alignment.CenterVertically){
-                        RadioButton(selected =(answerstate.value == index), onClick = {
-                            //updateAnswer(index)
-                        })//selected means we have to look the state of answer
-                        //index is the right answer and answerstate.value is the answer that we have selecteed
 
+                        //Determines if the current RadioButton is selected based on answerstate.
+                        /**
+                         * example
+                         * index = 0, answerText = "Option A"
+                         * index = 1, answerText = "Option B"
+                         * index = 2, answerText = "Option C"
+                         * index = 3, answerText = "Option D"
+                         *
+                         * In each loop, index represents the position of the current answer
+                         * choice in the list, so if you select "Option B", the index for that choice is 1.
+                         */
+
+                        RadioButton(selected =(answerstate.value == index), onClick = {
+                            updateAnswer(index)
+                        }, modifier = Modifier.padding(start = 16.dp),
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor =
+                                    if(correctAnswerState.value == true
+                                        && index == answerstate.value){
+                                        Color.Green.copy(alpha = 0.3f)
+                                    }
+                                    else{
+                                        Color.Red.copy(alpha = 0.3f)
+                                    })) //end of radio button
+                        Text(text = answerText)
                     }
                 }
             }
