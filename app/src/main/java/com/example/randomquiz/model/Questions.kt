@@ -4,5 +4,5 @@ data class Questions(
     val answer:String,
     val category: String,
     val choices:List<String>,
-    val questions: String
+    val question: String
 )

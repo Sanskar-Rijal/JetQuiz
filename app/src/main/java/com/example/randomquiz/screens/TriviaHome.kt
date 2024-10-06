@@ -8,5 +8,4 @@ import com.example.randomquiz.component.Questions
 @Composable
 fun TriviaHome(viewmodel:QuestionsViewModel = hiltViewModel()){
     Questions(viewmodel)
-
 }

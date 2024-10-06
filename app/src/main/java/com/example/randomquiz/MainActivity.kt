@@ -22,10 +22,7 @@ class MainActivity : ComponentActivity() {
         //enableEdgeToEdge()
         setContent {
             myapp {
-                //TriviaHome()
-                val quizViewmodel:QuestionsViewModel by viewModels()
-//                Questions(quizViewmodel)
-                    Questions(quizViewmodel)
+                TriviaHome()
             }
         }
     }

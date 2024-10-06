@@ -53,11 +53,16 @@ fun Questions(viewmodel: QuestionsViewModel){
 
     }
     else{
-        if (questions != null){
-            QuestionDisplay(question=questions.first())
+//        questions?.forEach{questionitem->
+//            Log.d("result", "Questions: ${questionitem.question}")
+//
+//        }
+        if(questions!=null){
+            QuestionDisplay(questions.first())
         }
-    }
 
+    }
+     Log.d("Size", "Questions: ${questions?.size}")
 }
 
 
@@ -108,7 +113,7 @@ fun QuestionDisplay(
             QuestionTracker()
             DrawComposable(pathEffect)
             Column(){
-                Text(text = question.questions,
+                Text(text =question.question,
                     modifier = Modifier
                         .padding(7.dp)
                         .align(alignment = Alignment.Start)
