@@ -132,10 +132,14 @@ fun QuestionDisplay(
         .fillMaxWidth()
         .fillMaxHeight(),
         color=AppColors.mDarkPurple) {
-        Column(modifier = Modifier,
+        Column(modifier = Modifier
+            .padding(10.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start){
-            QuestionTracker(counter = questionIndex.value )
+            if(questionIndex.value >=4){
+                ShowProgress(Score = questionIndex.value)
+            }
+            QuestionTracker(counter = questionIndex.value, outofInt = viewmodel.data.value.data?.toMutableList()?.size!!  )
             DrawComposable(pathEffect)
             Column(){
                 Text(text =question.question,
